@@ -7,7 +7,7 @@ def remover_acentos(s):
         if unicodedata.category(c) != 'Mn'
     )
 
-def filtrar_palavras(caracters):
+def filtrar_palavras(caracters, limite):
     """
     Filtra palavras de no mínimo 4 letras que:
     - são formadas apenas por letras
@@ -24,7 +24,7 @@ def filtrar_palavras(caracters):
     palavras_validas = []
     for palavra in wordlist:
         palavra_limpa = palavra.strip().lower()
-        if 4 <= len(palavra_limpa):
+        if 4 <= len(palavra_limpa) <= limite:
             if palavra_limpa.isalpha():  # garante só letras
                 palavra_sem_acentos = remover_acentos(palavra_limpa)
                 if letra_obg in palavra_sem_acentos and all(l in letras_validas for l in palavra_sem_acentos):

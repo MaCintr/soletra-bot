@@ -6,6 +6,19 @@ from scraper.browser import iniciar_browser
 from solver.word_filter import filtrar_palavras
 
 def ler_elementos_da_pagina():
+    
+    # Coletar o tamanho da maior palavra do desafio para limitar o tamanho das palavras no filtro
+    def coletar_limite():
+        tamanho_palavras = driver.find_elements(By.CSS_SELECTOR, ".word-box.svelte-9jj3fa")
+
+        ultimo_elemento = tamanho_palavras[-1]
+
+        texto_ultimo_elemento = ultimo_elemento.text.strip()
+        print("Limite => ", texto_ultimo_elemento)
+
+        limite = int(texto_ultimo_elemento[:2])
+        
+        return limite
 
     driver = iniciar_browser()    
     actions = ActionChains(driver)
@@ -32,7 +45,7 @@ def ler_elementos_da_pagina():
 
     print("Letras encontradas => ", letras)
     
-    palavras_validas = filtrar_palavras(letras)
+    palavras_validas = filtrar_palavras(caracters=letras, limite=coletar_limite())
     print(f"Palavras válidas para o desafio ({len(palavras_validas)})=> ", palavras_validas)
     
     actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
