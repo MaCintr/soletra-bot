@@ -30,4 +30,4 @@ def filtrar_palavras(caracters, limite):
                 if letra_obg in palavra_sem_acentos and all(l in letras_validas for l in palavra_sem_acentos):
                     palavras_validas.append(palavra_limpa)  # mantém acentos na palavra final
 
-    return palavras_validas
+    return sorted(palavras_validas, key=len)
