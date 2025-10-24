@@ -51,6 +51,9 @@ def ler_elementos_da_pagina():
     actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
     time.sleep(1)
     
+
+    
+    
     index = 1
 
     for palavra in palavras_validas:
@@ -62,12 +65,22 @@ def ler_elementos_da_pagina():
             actions.send_keys(letra).perform()
             time.sleep(0.1)
         actions.send_keys(Keys.ENTER).perform()
+        elemento_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa")
+        acertos = elemento_acertos.text.split("/")
         time.sleep(0.5)
+        if acertos[0] == acertos[1]:
+            print("Todas as palavras foram encontradas!")
+            break
     
-    print("Lista de palavras percorrida com sucesso!")
-    time.sleep(3)
-    print("-------------- Encerrando partida --------------")
-    botao_encerrar = driver.find_element(By.CSS_SELECTOR, 'button[title="Botão responsável por encerrar o jogo"]')
-    botao_encerrar.click()
+    elemento_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa")
+    acertos = elemento_acertos.text.split("/")
+    if acertos[0] == acertos[1]:
+        pass
+    else:
+        print("Lista de palavras percorrida com sucesso!")
+        time.sleep(3)
+        print("-------------- Encerrando partida --------------")
+        botao_encerrar = driver.find_element(By.CSS_SELECTOR, 'button[title="Botão responsável por encerrar o jogo"]')
+        botao_encerrar.click()
     time.sleep(30)
     driver.quit()
