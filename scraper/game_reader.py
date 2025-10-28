@@ -63,8 +63,6 @@ def ler_elementos_da_pagina():
     
     palavras_validas = filtrar_palavras(caracters=letras, limite=coletar_limite())
     print(f"Palavras válidas para o desafio ({len(palavras_validas)})=> ", palavras_validas)
-    
-    actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
     time.sleep(1)
     
 
@@ -77,14 +75,20 @@ def ler_elementos_da_pagina():
     for palavra in palavras_validas:
         # actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
         # time.sleep(0.1)
-        if len(palavra) >= coletar_tamanho_minimo_das_palavras_faltantes():
+        minimo = coletar_tamanho_minimo_das_palavras_faltantes()
+        # print(minimo)
+        if len(palavra) >= minimo:
+            # time.sleep(0.05)
             print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
-            actions.send_keys(palavra).perform()
+            for letra in palavra:
+                actions.send_keys(letra).perform()
+                # time.sleep(0.05)
+            time.sleep(0.05)
             actions.send_keys(Keys.ENTER).perform()
-            time.sleep(0.1)
-            actions.send_keys(Keys.CONTROL + Keys.BACKSPACE).perform()
-            time.sleep(0.1)
-            # time.sleep(0.1)
+            time.sleep(0.05)
+            for letra in palavra:
+                actions.send_keys(Keys.BACKSPACE).perform()
+                # time.sleep(0.05)
             acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
             if acertos[0] == acertos[1]:
                 print("Todas as palavras foram encontradas!")
