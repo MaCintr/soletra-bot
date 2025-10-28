@@ -1,31 +1,47 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 from scraper.browser import iniciar_browser
 from solver.word_filter import filtrar_palavras
+
+numeros_validos = ['1 ', '2 ', '3 ', '4 ', '5 ', '6 ', '7 ', '8 ', '9 ', '10', '11', '12', '13', '14', '15']
 
 def ler_elementos_da_pagina():
     
     # Coletar o tamanho da maior palavra do desafio para limitar o tamanho das palavras no filtro
     def coletar_limite():
         tamanho_palavras = driver.find_elements(By.CSS_SELECTOR, ".word-box.svelte-9jj3fa")
+        ultimo_elemento = tamanho_palavras[-1].text.strip()
+        limite = int(ultimo_elemento[:2])
 
-        ultimo_elemento = tamanho_palavras[-1]
-
-        texto_ultimo_elemento = ultimo_elemento.text.strip()
-        print("Limite => ", texto_ultimo_elemento)
-
-        limite = int(texto_ultimo_elemento[:2])
-        
         return limite
+
+    def coletar_tamanho_minimo_das_palavras_faltantes():
+        tamanho_palavras = driver.find_elements(By.CSS_SELECTOR, ".word-box.svelte-9jj3fa")
+        tamanho_palavras_text = [item.text for item in tamanho_palavras]
+        for item in tamanho_palavras_text:
+            if item[:2] in numeros_validos:
+                return int(item[:2])
+
 
     driver = iniciar_browser()    
     actions = ActionChains(driver)
     driver.get("https://g1.globo.com/jogos/soletra/")
+    # time.sleep(3)
     
-    time.sleep(3)
-    driver.find_element(By.CSS_SELECTOR, ".button.button--game-white.intro-button.svelte-1t84pcu").click()
+    
+    try:
+        btn_erro_ao_iniciar = driver.find_element(By.CSS_SELECTOR, ".button.button--primary.full-size-button.svelte-1t84pcu.full-width")
+        print(btn_erro_ao_iniciar)
+        btn_erro_ao_iniciar.click()
+    except:
+        pass
+
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button.button--game-white.intro-button.svelte-1t84pcu"))).click()
     print("---------------- Iniciando jogo ----------------")
     time.sleep(1)
     driver.find_element(By.CSS_SELECTOR, ".button.button--game-white.drawer-close-icon.svelte-1t84pcu").click()
@@ -55,24 +71,29 @@ def ler_elementos_da_pagina():
     
     
     index = 1
+    
+    iniciar_timer = time.perf_counter()
 
     for palavra in palavras_validas:
-        print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
-        actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
-        time.sleep(0.2)
+        # actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
+        # time.sleep(0.1)
+        if len(palavra) >= coletar_tamanho_minimo_das_palavras_faltantes():
+            print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
+            actions.send_keys(palavra).perform()
+            actions.send_keys(Keys.ENTER).perform()
+            time.sleep(0.1)
+            actions.send_keys(Keys.CONTROL + Keys.BACKSPACE).perform()
+            time.sleep(0.1)
+            # time.sleep(0.1)
+            acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
+            if acertos[0] == acertos[1]:
+                print("Todas as palavras foram encontradas!")
+                break
+        else:
+            print(f"Pulando palavra {index} de {len(palavras_validas)} => ", palavra)
         index += 1
-        for letra in palavra:
-            actions.send_keys(letra).perform()
-        actions.send_keys(Keys.ENTER).perform()
-        elemento_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa")
-        acertos = elemento_acertos.text.split("/")
-        time.sleep(0.3)
-        if acertos[0] == acertos[1]:
-            print("Todas as palavras foram encontradas!")
-            break
     
-    elemento_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa")
-    acertos = elemento_acertos.text.split("/")
+    acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
     if acertos[0] == acertos[1]:
         pass
     else:
@@ -82,5 +103,11 @@ def ler_elementos_da_pagina():
         botao_encerrar = driver.find_element(By.CSS_SELECTOR, 'button[title="Botão responsável por encerrar o jogo"]')
         botao_encerrar.click()
         
-    input("Jogo finalizado! Pressione Enter para fechar o navegador...")
+    finalizar_timer = time.perf_counter()
+    tempo_de_exec = (finalizar_timer - iniciar_timer) / 60
+    
+    print("Jogo finalizado! Tempo de execução (em minutos) =>", tempo_de_exec)
+    input("Pressione Enter para fechar o navegador...")
     driver.quit()
+    
+    
