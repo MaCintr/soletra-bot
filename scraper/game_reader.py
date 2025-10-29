@@ -65,14 +65,17 @@ def ler_elementos_da_pagina():
     print(f"Palavras válidas para o desafio ({len(palavras_validas)})=> ", palavras_validas)
     time.sleep(1)
     
-
-    
+    botao_apagar = driver.find_element(By.CSS_SELECTOR, 'button[title="Botão responsável por apagar as letras que foram selecionadas"]')    
     
     index = 1
     
     iniciar_timer = time.perf_counter()
 
     for palavra in palavras_validas:
+        acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
+        if acertos[0] == acertos[1]:
+            print("Todas as palavras foram encontradas!")
+            break
         # actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
         # time.sleep(0.1)
         minimo = coletar_tamanho_minimo_das_palavras_faltantes()
@@ -80,19 +83,15 @@ def ler_elementos_da_pagina():
         if len(palavra) >= minimo:
             # time.sleep(0.05)
             print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
-            for letra in palavra:
-                actions.send_keys(letra).perform()
-                time.sleep(0.05)
+            
+            actions.send_keys(palavra).perform()
+            
             # time.sleep(0.05)
             actions.send_keys(Keys.ENTER).perform()
-            time.sleep(0.05)
+            # time.sleep(0.1)
             for letra in palavra:
-                actions.send_keys(Keys.BACKSPACE).perform()
-                time.sleep(0.05)
-            acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
-            if acertos[0] == acertos[1]:
-                print("Todas as palavras foram encontradas!")
-                break
+                botao_apagar.click()
+                time.sleep(0.02)
         else:
             print(f"Pulando palavra {index} de {len(palavras_validas)} => ", palavra)
         index += 1
