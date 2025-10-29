@@ -73,7 +73,8 @@ def ler_elementos_da_pagina():
 
     for palavra in palavras_validas:
         acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
-        if acertos[0] == acertos[1]:
+        # print(acertos)
+        if int(acertos[0]) == int(acertos[1]):
             print("Todas as palavras foram encontradas!")
             break
         # actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
@@ -88,6 +89,11 @@ def ler_elementos_da_pagina():
             
             # time.sleep(0.05)
             actions.send_keys(Keys.ENTER).perform()
+            acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
+            # print(acertos)
+            if int(acertos[0]) == int(acertos[1]):
+                print("Todas as palavras foram encontradas!")
+                break
             # time.sleep(0.1)
             for letra in palavra:
                 botao_apagar.click()
