@@ -72,30 +72,16 @@ def ler_elementos_da_pagina():
     iniciar_timer = time.perf_counter()
 
     for palavra in palavras_validas:
-        acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
-        # print(acertos)
-        if int(acertos[0]) == int(acertos[1]):
-            print("Todas as palavras foram encontradas!")
-            break
-        # actions.move_to_element(driver.find_element(By.TAG_NAME, "body")).click().perform()
-        # time.sleep(0.1)
         minimo = coletar_tamanho_minimo_das_palavras_faltantes()
-        # print(minimo)
         if len(palavra) >= minimo:
-            # time.sleep(0.05)
             print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
-            
             actions.send_keys(palavra).perform()
-            
-            # time.sleep(0.05)
             actions.send_keys(Keys.ENTER).perform()
             acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
-            # print(acertos)
             if int(acertos[0]) == int(acertos[1]):
                 print("Todas as palavras foram encontradas!")
                 break
-            # time.sleep(0.1)
-            for letra in palavra:
+            for _ in palavra:
                 botao_apagar.click()
                 time.sleep(0.02)
         else:
