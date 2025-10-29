@@ -82,13 +82,13 @@ def ler_elementos_da_pagina():
             print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
             for letra in palavra:
                 actions.send_keys(letra).perform()
-                # time.sleep(0.05)
-            time.sleep(0.05)
+                time.sleep(0.05)
+            # time.sleep(0.05)
             actions.send_keys(Keys.ENTER).perform()
             time.sleep(0.05)
             for letra in palavra:
                 actions.send_keys(Keys.BACKSPACE).perform()
-                # time.sleep(0.05)
+                time.sleep(0.05)
             acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
             if acertos[0] == acertos[1]:
                 print("Todas as palavras foram encontradas!")
