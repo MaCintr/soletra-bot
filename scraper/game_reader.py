@@ -19,20 +19,22 @@ def ler_elementos_da_pagina():
 
         return limite
 
-    def coletar_tamanho_minimo_das_palavras_faltantes():
-        tamanho_palavras = driver.find_elements(By.CSS_SELECTOR, ".word-box.svelte-9jj3fa")
-        tamanho_palavras_text = [item.text for item in tamanho_palavras]
-        for item in tamanho_palavras_text:
-            if item[:2] in numeros_validos:
-                return int(item[:2])
+    # Coletar o tamanho mínimo de palavras
+    def coletar_tamanho_minimo_das_palavras_faltantes(palavra):
+        lista = driver.find_elements(By.XPATH, f"//span[contains(., '{len(palavra)} letras')]")
+        if len(lista) > 0:
+            return True
+        else:
+            return False
+            
 
 
+    # Iniciar Browser
     driver = iniciar_browser()    
     actions = ActionChains(driver)
     driver.get("https://g1.globo.com/jogos/soletra/")
-    # time.sleep(3)
     
-    
+    # Verifica se dá erro ao iniciar
     try:
         btn_erro_ao_iniciar = driver.find_element(By.CSS_SELECTOR, ".button.button--primary.full-size-button.svelte-1t84pcu.full-width")
         print(btn_erro_ao_iniciar)
@@ -40,6 +42,7 @@ def ler_elementos_da_pagina():
     except:
         pass
 
+    # Clica no botão iniciar e fecha as instruções
     wait = WebDriverWait(driver, 10)
     wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button.button--game-white.intro-button.svelte-1t84pcu"))).click()
     print("---------------- Iniciando jogo ----------------")
@@ -49,59 +52,72 @@ def ler_elementos_da_pagina():
     time.sleep(1)
     
 
-
+    # Coleta a letra obrigatódia (central) e as demais
     letra_obg_elemento = driver.find_element(By.CSS_SELECTOR, ".hexagon-cell.center.svelte-1vt3j7k")
     letras_elemento = driver.find_elements(By.CSS_SELECTOR, ".hexagon-cell.outer.svelte-1vt3j7k")
-
     letra_obg = letra_obg_elemento.text
     letras_fora = [el.text for el in letras_elemento]
+    
+    # Armazena as letras em um array, sendo a primeira letra é obrigatória
     letras = [letra_obg] + letras_fora
 
 
 
     print("Letras encontradas => ", letras)
     
+    # Chama o método que filtra apenas palavras que podem ser inseridas no jogo
     palavras_validas = filtrar_palavras(caracters=letras, limite=coletar_limite())
     print(f"Palavras válidas para o desafio ({len(palavras_validas)})=> ", palavras_validas)
     time.sleep(1)
     
-    botao_apagar = driver.find_element(By.CSS_SELECTOR, 'button[title="Botão responsável por apagar as letras que foram selecionadas"]')    
+    input_text = driver.find_element(By.ID, "input")
     
     index = 1
     
+    # Coleta o runtime atual
     iniciar_timer = time.perf_counter()
 
+    # Loop pelas palavras na lista de palavras válidas
     for palavra in palavras_validas:
-        minimo = coletar_tamanho_minimo_das_palavras_faltantes()
-        if len(palavra) >= minimo:
+        minimo = coletar_tamanho_minimo_das_palavras_faltantes(palavra)
+        # Verifica se a palavra atual possui quantidade de caracteres maior ou igual ao tamanho mínimo
+        if minimo:
             print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
-            actions.send_keys(palavra).perform()
-            actions.send_keys(Keys.ENTER).perform()
-            acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
-            if int(acertos[0]) == int(acertos[1]):
+            # Digita e envia a palavra
+            try:
+                input_text.send_keys(palavra)
+                input_text.send_keys(Keys.ENTER)
+            except:
                 print("Todas as palavras foram encontradas!")
                 break
-            for _ in palavra:
-                botao_apagar.click()
-                time.sleep(0.02)
+            time.sleep(0.2)
+            
+            # Deleta a palavra atual para a entrada da próxima
+            input_text.send_keys(Keys.CONTROL + 'a')
+            input_text.send_keys(Keys.DELETE)
+                
+        # Caso a palavra atual seja menor que o tamanho mínimo, não será testada
         else:
             print(f"Pulando palavra {index} de {len(palavras_validas)} => ", palavra)
         index += 1
+    time.sleep(3)
     
-    acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text.split("/")
-    if acertos[0] == acertos[1]:
-        pass
-    else:
-        print("Lista de palavras percorrida com sucesso!")
-        time.sleep(3)
-        print("-------------- Encerrando partida --------------")
+    # Caso não tenha encontrado todas as palavras, encerrará a partida
+    try:
         botao_encerrar = driver.find_element(By.CSS_SELECTOR, 'button[title="Botão responsável por encerrar o jogo"]')
         botao_encerrar.click()
+    except:
+        pass
         
+    # Coleta o runtime ao final da execução
     finalizar_timer = time.perf_counter()
-    tempo_de_exec = (finalizar_timer - iniciar_timer) / 60
+    # Armazena o tempo de execução em minutos
+    tempo_de_exec = round((finalizar_timer - iniciar_timer) / 60, 1)
     
-    print("Jogo finalizado! Tempo de execução (em minutos) =>", tempo_de_exec)
+    print("--------------------- Jogo finalizado! ----------------------")
+    print("Tempo de execução (em minutos) =>", tempo_de_exec)
+    qtd_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text
+    print("Palavras encontradas => ", qtd_acertos)
     input("Pressione Enter para fechar o navegador...")
     driver.quit()
     

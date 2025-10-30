@@ -56,8 +56,6 @@ Execute o bot:
 O projeto utiliza um dicionário de palavras em português disponível em:
 🔗 [AlfredoFilho/Palavras_PT-BR](https://github.com/AlfredoFilho/Palavras_PT-BR/blob/master/Palavras_PT-BR.txt)
 
-Para evitar limites de CDN, o arquivo é baixado e armazenado localmente na pasta /assets/.
-
 ## 🧩 Exemplo de Saída
 ```---------------- Iniciando jogo ----------------```
 
