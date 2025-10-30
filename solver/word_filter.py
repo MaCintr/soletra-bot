@@ -1,25 +1,20 @@
-import unicodedata
+# Permite manipular caracteres
+from unidecode import unidecode
 
-def remover_acentos(s):
-    return ''.join(
-        c for c in unicodedata.normalize('NFD', s)
-        if unicodedata.category(c) != 'Mn'
-    )
+def filtrar_palavras(caracters: list[str], limite: int) -> list[str]:
+    letra_obg = caracters[0].lower()
+    letras_validas = set(c.lower() for c in caracters)
 
-def filtrar_palavras(caracters, limite):
-    letra_obg = remover_acentos(caracters[0].lower())
-    letras_validas = set(remover_acentos(c.lower()) for c in caracters)
-    
-    with open("wordlist.txt", "r", encoding="utf-8") as f:
-        wordlist = f.read().splitlines()
+    # Remove acentos de todas as palavras da wordlist
+    with open("wordlist.txt", "r", encoding="utf-8") as lista:
+        wordlist = [unidecode(palavra.strip().lower()) for palavra in lista if palavra.strip().isalpha()]
 
-    palavras_validas = []
-    for palavra in wordlist:
-        palavra_limpa = palavra.strip().lower()
-        if 4 <= len(palavra_limpa) <= limite:
-            if palavra_limpa.isalpha():
-                palavra_sem_acentos = remover_acentos(palavra_limpa)
-                if letra_obg in palavra_sem_acentos and all(l in letras_validas for l in palavra_sem_acentos) and (palavra_sem_acentos in palavras_validas) == False:
-                    palavras_validas.append(palavra_sem_acentos)
+    # Filtra as palavras válidas usando list comprehension
+    palavras_validas = [
+        palavra for palavra in wordlist
+        if 4 <= len(palavra) <= limite
+        and letra_obg in palavra
+        and all(l in letras_validas for l in palavra)
+    ]
 
-    return sorted(palavras_validas, key=len)
+    return sorted(set(palavras_validas), key=len)
