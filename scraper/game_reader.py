@@ -7,8 +7,6 @@ import time
 from scraper.browser import iniciar_browser
 from solver.word_filter import filtrar_palavras
 
-numeros_validos = ['1 ', '2 ', '3 ', '4 ', '5 ', '6 ', '7 ', '8 ', '9 ', '10', '11', '12', '13', '14', '15']
-
 def ler_elementos_da_pagina():
     
     # Coletar o tamanho da maior palavra do desafio para limitar o tamanho das palavras no filtro
@@ -31,7 +29,6 @@ def ler_elementos_da_pagina():
 
     # Iniciar Browser
     driver = iniciar_browser()    
-    actions = ActionChains(driver)
     driver.get("https://g1.globo.com/jogos/soletra/")
     
     # Verifica se dá erro ao iniciar
