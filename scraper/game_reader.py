@@ -64,7 +64,7 @@ def ler_elementos_da_pagina():
     
     # Chama o método que filtra apenas palavras que podem ser inseridas no jogo
     palavras_validas = filtrar_palavras(caracters=letras, limite=coletar_limite())
-    print(f"Palavras válidas para o desafio ({len(palavras_validas)})=> ", palavras_validas)
+    print(f"Palavras válidas para o desafio => {len(palavras_validas)}")
     time.sleep(1)
     
     input_text = driver.find_element(By.ID, "input")
@@ -77,25 +77,25 @@ def ler_elementos_da_pagina():
     # Loop pelas palavras na lista de palavras válidas
     for palavra in palavras_validas:
         minimo = coletar_tamanho_minimo_das_palavras_faltantes(palavra)
-        # Verifica se a palavra atual possui quantidade de caracteres maior ou igual ao tamanho mínimo
-        if minimo:
-            print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
-            # Digita e envia a palavra
-            try:
+        try:
+            # Verifica se a palavra atual possui quantidade de caracteres maior ou igual ao tamanho mínimo
+            if minimo:
+                print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
+                # Digita e envia a palavra
                 input_text.send_keys(palavra)
                 input_text.send_keys(Keys.ENTER)
                 # Deleta a palavra atual para a entrada da próxima
                 input_text.send_keys(Keys.CONTROL + 'a')
                 input_text.send_keys(Keys.DELETE)
-            except:
-                print("Input não encontrado. Encerrando o jogo...")
-                break
-            time.sleep(0.2)
+            # Caso a palavra atual seja menor que o tamanho mínimo, não será testada
+            else:
+                print(f"Pulando palavra {index} de {len(palavras_validas)} => ", palavra)
+        except:
+            print("Input não encontrado. Encerrando o jogo...")
+            break
+        time.sleep(0.2)
             
                 
-        # Caso a palavra atual seja menor que o tamanho mínimo, não será testada
-        else:
-            print(f"Pulando palavra {index} de {len(palavras_validas)} => ", palavra)
         index += 1
     time.sleep(3)
     
