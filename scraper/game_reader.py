@@ -84,14 +84,14 @@ def ler_elementos_da_pagina():
             try:
                 input_text.send_keys(palavra)
                 input_text.send_keys(Keys.ENTER)
+                # Deleta a palavra atual para a entrada da próxima
+                input_text.send_keys(Keys.CONTROL + 'a')
+                input_text.send_keys(Keys.DELETE)
             except:
                 print("Todas as palavras foram encontradas!")
                 break
             time.sleep(0.2)
             
-            # Deleta a palavra atual para a entrada da próxima
-            input_text.send_keys(Keys.CONTROL + 'a')
-            input_text.send_keys(Keys.DELETE)
                 
         # Caso a palavra atual seja menor que o tamanho mínimo, não será testada
         else:
