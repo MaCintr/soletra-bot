@@ -88,7 +88,7 @@ def ler_elementos_da_pagina():
                 input_text.send_keys(Keys.CONTROL + 'a')
                 input_text.send_keys(Keys.DELETE)
             except:
-                print("Todas as palavras foram encontradas!")
+                print("Input não encontrado. Encerrando o jogo...")
                 break
             time.sleep(0.2)
             
