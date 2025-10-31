@@ -2,12 +2,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
 import time
 from scraper.browser import iniciar_browser
 from solver.word_filter import filtrar_palavras
 
-def ler_elementos_da_pagina():
+def resolver_soletra():
     
     # Coletar o tamanho da maior palavra do desafio para limitar o tamanho das palavras no filtro
     def coletar_limite():
@@ -43,8 +42,7 @@ def ler_elementos_da_pagina():
     wait = WebDriverWait(driver, 10)
     wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button.button--game-white.intro-button.svelte-1t84pcu"))).click()
     print("---------------- Iniciando jogo ----------------")
-    time.sleep(1)
-    driver.find_element(By.CSS_SELECTOR, ".button.button--game-white.drawer-close-icon.svelte-1t84pcu").click()
+    wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button.button--game-white.drawer-close-icon.svelte-1t84pcu"))).click()
     print("------------- Fechando instruções --------------")
     time.sleep(1)
     
@@ -53,14 +51,14 @@ def ler_elementos_da_pagina():
     letra_obg_elemento = driver.find_element(By.CSS_SELECTOR, ".hexagon-cell.center.svelte-1vt3j7k")
     letras_elemento = driver.find_elements(By.CSS_SELECTOR, ".hexagon-cell.outer.svelte-1vt3j7k")
     letra_obg = letra_obg_elemento.text
-    letras_fora = [el.text for el in letras_elemento]
+    letras_fora = [letra.text for letra in letras_elemento]
     
     # Armazena as letras em um array, sendo a primeira letra é obrigatória
     letras = [letra_obg] + letras_fora
 
 
 
-    print("Letras encontradas => ", letras)
+    print("Letras do dia => ", letras)
     
     # Chama o método que filtra apenas palavras que podem ser inseridas no jogo
     palavras_validas = filtrar_palavras(caracters=letras, limite=coletar_limite())
@@ -72,14 +70,14 @@ def ler_elementos_da_pagina():
     index = 1
     
     # Coleta o runtime atual
-    iniciar_timer = time.perf_counter()
+    timer_inicial = time.perf_counter()
 
     # Loop pelas palavras na lista de palavras válidas
     for palavra in palavras_validas:
         minimo = coletar_tamanho_minimo_das_palavras_faltantes(palavra)
-        try:
+        if minimo:
+            try:
             # Verifica se a palavra atual possui quantidade de caracteres maior ou igual ao tamanho mínimo
-            if minimo:
                 print(f"Testando palavra {index} de {len(palavras_validas)} => ", palavra)
                 # Digita e envia a palavra
                 input_text.send_keys(palavra)
@@ -88,11 +86,11 @@ def ler_elementos_da_pagina():
                 input_text.send_keys(Keys.CONTROL + 'a')
                 input_text.send_keys(Keys.DELETE)
             # Caso a palavra atual seja menor que o tamanho mínimo, não será testada
-            else:
-                print(f"Pulando palavra {index} de {len(palavras_validas)} => ", palavra)
-        except:
-            print("Input não encontrado. Encerrando o jogo...")
-            break
+            except:
+                print("Não foi possível encontrar o campo de input. Encerrando o jogo...")
+                break
+        else:
+            print(f"Pulando palavra {index} de {len(palavras_validas)}")
         time.sleep(0.2)
             
                 
@@ -107,15 +105,15 @@ def ler_elementos_da_pagina():
         pass
         
     # Coleta o runtime ao final da execução
-    finalizar_timer = time.perf_counter()
+    timer_final = time.perf_counter()
     # Armazena o tempo de execução em minutos
-    tempo_de_exec = round((finalizar_timer - iniciar_timer) / 60, 1)
+    tempo_de_exec = round((timer_final - timer_inicial) / 60, 2)
     
     print("--------------------- Jogo finalizado! ----------------------")
     print("Tempo de execução (em minutos) =>", tempo_de_exec)
     qtd_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text
     print("Palavras encontradas => ", qtd_acertos)
-    input("Pressione Enter para fechar o navegador...")
+    input("Pressione Enter para encerrar o programa...")
     driver.quit()
     
     
