@@ -17,7 +17,7 @@ def resolver_soletra():
         return limite
 
     # Coletar o tamanho mínimo de palavras
-    def coletar_tamanho_minimo_das_palavras_faltantes(palavra):
+    def validar_tamanho_palavra(palavra):
         lista = driver.find_elements(By.XPATH, f"//span[contains(., '{len(palavra)} letras')]")
         if len(lista) > 0:
             return True
@@ -74,7 +74,7 @@ def resolver_soletra():
 
     # Loop pelas palavras na lista de palavras válidas
     for palavra in palavras_validas:
-        minimo = coletar_tamanho_minimo_das_palavras_faltantes(palavra)
+        minimo = validar_tamanho_palavra(palavra)
         if minimo:
             try:
             # Verifica se a palavra atual possui quantidade de caracteres maior ou igual ao tamanho mínimo

@@ -1,7 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
-import os
 
 def iniciar_browser():
     options = Options()

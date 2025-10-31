@@ -5,7 +5,7 @@ def filtrar_palavras(caracters: list[str], limite: int) -> list[str]:
     letra_obg = caracters[0].lower()
     letras_validas = set(c.lower() for c in caracters)
 
-    # Remove acentos de todas as palavras da wordlist
+    # Remove palavras compostas e acentos de todas as palavras da wordlist e armazena em uma variável
     with open("wordlist.txt", "r", encoding="utf-8") as lista:
         wordlist = [unidecode(palavra.strip().lower()) for palavra in lista if palavra.strip().isalpha()]
 
