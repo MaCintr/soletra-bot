@@ -5,6 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from scraper.browser import iniciar_browser
 from solver.word_filter import filtrar_palavras
+from interface.tela_final import tela_final
+from interface.tela_final import aviso_input_nao_encontrado
 
 def resolver_soletra():
     
@@ -68,6 +70,7 @@ def resolver_soletra():
     input_text = driver.find_element(By.ID, "input")
     
     index = 1
+    input_nao_encontrado = False
     
     # Coleta o runtime atual
     timer_inicial = time.perf_counter()
@@ -88,6 +91,7 @@ def resolver_soletra():
             # Caso a palavra atual seja menor que o tamanho mínimo, não será testada
             except:
                 print("Não foi possível encontrar o campo de input. Encerrando o jogo...")
+                input_nao_encontrado = True
                 break
         else:
             print(f"Pulando palavra {index} de {len(palavras_validas)}")
@@ -108,12 +112,16 @@ def resolver_soletra():
     timer_final = time.perf_counter()
     # Armazena o tempo de execução em minutos
     tempo_de_exec = round((timer_final - timer_inicial) / 60, 2)
-    
-    print("--------------------- Jogo finalizado! ----------------------")
-    print("Tempo de execução (em minutos) =>", tempo_de_exec)
     qtd_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text
-    print("Palavras encontradas => ", qtd_acertos)
-    input("Pressione Enter para encerrar o programa...")
+    
     driver.quit()
+    if (input_nao_encontrado):
+        aviso_input_nao_encontrado()
+    tela_final(tempo_de_exec=tempo_de_exec, acertos=qtd_acertos)
+    
+    # print("--------------------- Jogo finalizado! ----------------------")
+    # print("Tempo de execução (em minutos) =>", tempo_de_exec)
+    # print("Palavras encontradas => ", qtd_acertos)
+    # input("Pressione Enter para encerrar o programa...")
     
     
