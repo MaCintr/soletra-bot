@@ -22,6 +22,7 @@ Microsoft Edge instalado
 
 selenium 
 webdriver-manager
+unidecode
 
 ## 🧠 Como Funciona
 
