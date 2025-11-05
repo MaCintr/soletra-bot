@@ -5,7 +5,7 @@ from time import sleep
 from scraper.game_reader import resolver_soletra
 
 root = Tk()
-
+root.attributes('-topmost', True)
 
 
 def iniciar_jogo():

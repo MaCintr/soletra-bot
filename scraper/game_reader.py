@@ -5,8 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from scraper.browser import iniciar_browser
 from solver.word_filter import filtrar_palavras
-from interface.tela_final import tela_final
-from interface.tela_final import aviso_input_nao_encontrado
+from interface.end import tela_final, aviso_input_nao_encontrado
 
 def resolver_soletra():
     
@@ -105,6 +104,7 @@ def resolver_soletra():
     try:
         botao_encerrar = driver.find_element(By.CSS_SELECTOR, 'button[title="Botão responsável por encerrar o jogo"]')
         botao_encerrar.click()
+        time.sleep(3)
     except:
         pass
         
@@ -115,6 +115,7 @@ def resolver_soletra():
     qtd_acertos = driver.find_element(By.CSS_SELECTOR, ".points.svelte-9jj3fa").text
     
     driver.quit()
+
     if (input_nao_encontrado):
         aviso_input_nao_encontrado()
     tela_final(tempo_de_exec=tempo_de_exec, acertos=qtd_acertos)
