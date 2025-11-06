@@ -21,7 +21,9 @@ Microsoft Edge instalado
 ## ⚙️ Dependências:
 
 selenium 
+
 webdriver-manager
+
 unidecode
 
 ## 🧠 Como Funciona
